@@ -1,12 +1,14 @@
 import { prisma } from "../utils/db"
 import bcrypt from "bcrypt"
-import { User } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import {
   PrismaUniqueConstraintError,
   toTypedPrismaError,
 } from "../utils/prismaErrors"
 
-async function createUser(user: User): Promise<User> {
+async function createUser(
+  user: Prisma.UserCreateInput
+): Promise<Prisma.UserCreateInput> {
   const { email, firstName, lastName, password, isAdmin } = user
 
   const hashedPassword = await bcrypt.hash(password, 10)
@@ -32,7 +34,7 @@ async function createUser(user: User): Promise<User> {
   }
 }
 
-async function getUserByEmail(email: string): Promise<User | null> {
+async function getUserByEmail(email: string): Promise<Prisma.UserCreateInput | null> {
   try {
     const user = await prisma.user.findUnique({
       where: {
