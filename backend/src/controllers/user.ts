@@ -1,50 +1,44 @@
 import { prisma } from "../utils/db"
 import bcrypt from "bcrypt"
 import { Prisma } from "@prisma/client"
-import {
-  PrismaUniqueConstraintError,
-  toTypedPrismaError,
-} from "../utils/prismaErrors"
-import { AuthErrors, GeneralErrors } from "../utils/errors"
+import { PrismaUniqueConstraintError } from "../utils/prismaErrors"
+import { ErrorAuth, ErrorMsg } from "../utils/errorMessages"
 import { Request, Response } from "express"
 import { generateJWT } from "../utils/jwtUtils"
+import HttpStatusCode from "../utils/httpStatusCode"
 
 async function createUser(req: Request, res: Response) {
   const { email, firstName, lastName, password, isAdmin } =
     req.body as Prisma.UserCreateInput
-  const hashedPassword = await bcrypt.hash(password, 10)
+
   try {
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         firstName,
         lastName,
-        password: hashedPassword,
+        password: await bcrypt.hash(password, 10),
         isAdmin,
       },
     })
 
-    const userJwt = generateJWT({
-      email: newUser.email,
-      isAdmin: newUser.isAdmin,
-    })
+    const token = generateJWT({ email, isAdmin })
 
-    return res.status(201).send({ Token: `Bearer ${userJwt}` })
+    return res.status(HttpStatusCode.CREATED).send({ Token: "Bearer " + token })
   } catch (error) {
-    if (toTypedPrismaError(error) instanceof PrismaUniqueConstraintError) {
-      return res
-        .status(400)
-        .send({ message: AuthErrors.ALREADY_EXISTS, code: 400 })
+    if (error instanceof PrismaUniqueConstraintError) {
+      return res.status(HttpStatusCode.CONFLICT).send(ErrorAuth.ALREADY_EXISTS)
     }
 
     return res
-      .status(500)
-      .send({ message: GeneralErrors.SOMETHING_WENT_WRONG, code: 500 })
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .send(ErrorMsg.SOMETHING_WENT_WRONG)
   }
 }
 
 async function getUserByEmail(req: Request, res: Response) {
-  const { email } = req.body as Prisma.UserCreateInput
+  const { email } = req.params
+
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -53,17 +47,21 @@ async function getUserByEmail(req: Request, res: Response) {
     })
 
     if (!user) {
-      return res.status(404).send(AuthErrors.NOT_FOUND)
+      return res.status(HttpStatusCode.NOT_FOUND).send(ErrorAuth.NOT_FOUND)
     }
 
-    return res.status(200).send({
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isAdmin: user.isAdmin,
+    const { firstName, lastName, isAdmin } = user
+
+    return res.status(HttpStatusCode.OK).send({
+      email,
+      firstName,
+      lastName,
+      isAdmin,
     })
   } catch (error) {
-    return res.status(500).send(GeneralErrors.SOMETHING_WENT_WRONG)
+    return res
+      .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
+      .send(ErrorMsg.SOMETHING_WENT_WRONG)
   }
 }
 
