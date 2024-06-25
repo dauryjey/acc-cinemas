@@ -1,14 +1,15 @@
-import express, {Application } from "express";
-import cookieParser from "cookie-parser";
-import logger from "morgan";
+import express, { Application, Router } from "express"
+import cookieParser from "cookie-parser"
+import logger from "morgan"
+import apiRouter from "./routes/apiRouter"
 
-// app
-const app: Application = express();
+const app: Application = express()
 
-// plugins
-app.use(logger(process.env.NODE_ENV === "production" ? "common" : "dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(logger(process.env.NODE_ENV === "production" ? "common" : "dev"))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
 
-export default app;
+app.use("/api/v1", apiRouter) 
+
+export default app
