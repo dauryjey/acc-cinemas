@@ -27,12 +27,14 @@ async function createUser(req: Request, res: Response) {
     return res.status(HttpStatusCode.CREATED).json({ Token: "Bearer " + token })
   } catch (error) {
     if (error instanceof PrismaUniqueConstraintError) {
-      return res.status(HttpStatusCode.CONFLICT).json(ErrorAuth.ALREADY_EXISTS)
+      return res
+        .status(HttpStatusCode.CONFLICT)
+        .json({ message: ErrorAuth.ALREADY_EXISTS })
     }
 
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json(ErrorMsg.SOMETHING_WENT_WRONG)
+      .json({ message: ErrorMsg.SOMETHING_WENT_WRONG })
   }
 }
 
@@ -45,12 +47,14 @@ async function loginUser(req: Request, res: Response) {
     return res.status(HttpStatusCode.CREATED).json({ Token: "Bearer " + token })
   } catch (error) {
     if (error instanceof PrismaUniqueConstraintError) {
-      return res.status(HttpStatusCode.CONFLICT).json(ErrorAuth.ALREADY_EXISTS)
+      return res
+        .status(HttpStatusCode.CONFLICT)
+        .json({ message: ErrorAuth.ALREADY_EXISTS })
     }
 
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json(ErrorMsg.SOMETHING_WENT_WRONG)
+      .json({ message: ErrorMsg.SOMETHING_WENT_WRONG })
   }
 }
 
@@ -65,7 +69,9 @@ async function getUserByEmail(req: Request, res: Response) {
     })
 
     if (!user) {
-      return res.status(HttpStatusCode.NOT_FOUND).json(ErrorAuth.NOT_FOUND)
+      return res
+        .status(HttpStatusCode.NOT_FOUND)
+        .json({ message: ErrorAuth.NOT_FOUND })
     }
 
     const { firstName, lastName, isAdmin } = user
@@ -79,7 +85,7 @@ async function getUserByEmail(req: Request, res: Response) {
   } catch (error) {
     return res
       .status(HttpStatusCode.INTERNAL_SERVER_ERROR)
-      .json(ErrorMsg.SOMETHING_WENT_WRONG)
+      .json({ message: ErrorMsg.SOMETHING_WENT_WRONG })
   }
 }
 
