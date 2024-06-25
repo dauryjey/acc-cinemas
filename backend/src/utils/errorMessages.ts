@@ -5,6 +5,7 @@ export enum ErrorAuth {
   NOT_ADMIN = "User is not an admin",
   NOT_AUTHENTICATED = "User is not authenticated",
   NOT_AUTHORIZED = "User is not authorized",
+  INVALID_TOKEN = "Invalid token",
 }
 
 export enum ErrorMsg {
