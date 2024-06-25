@@ -39,9 +39,29 @@ async function createUser(req: Request, res: Response) {
 }
 
 async function loginUser(req: Request, res: Response) {
-  const { email, isAdmin } = req.body as Prisma.UserCreateInput
+  const { email, password, isAdmin } = req.body as Prisma.UserCreateInput
 
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    })
+
+    if (!user) {
+      return res
+        .status(HttpStatusCode.NOT_FOUND)
+        .json({ message: ErrorAuth.NOT_FOUND })
+    }
+
+    const unhashedPassword = await bcrypt.compare(password, user.password)
+
+    if (!unhashedPassword) {
+      return res
+        .status(HttpStatusCode.UNAUTHORIZED)
+        .json({ message: ErrorAuth.INVALID_PASSWORD })
+    }
+
     const token = generateJWT({ email, isAdmin })
 
     return res.status(HttpStatusCode.CREATED).json({ Token: "Bearer " + token })
