@@ -1,11 +1,11 @@
 import { prisma } from "../utils/db"
 import bcrypt from "bcrypt"
 import { Prisma } from "@prisma/client"
-import { PrismaUniqueConstraintError } from "../utils/prismaErrors"
-import { ErrorAuth, ErrorMsg } from "../utils/errorMessages"
+import { PrismaUniqueConstraintError } from "../const/prismaErrors"
+import { ErrorAuth, ErrorMsg } from "../const/errorMessages"
 import { Request, Response } from "express"
-import { generateJWT } from "../utils/jwtUtils"
-import HttpStatusCode from "../utils/httpStatusCode"
+import { generateJWT } from "../utils/jwt"
+import HttpStatusCode from "../const/httpStatusCode"
 
 async function createUser(req: Request, res: Response) {
   const { email, firstName, lastName, password, isAdmin } =
@@ -39,7 +39,7 @@ async function createUser(req: Request, res: Response) {
 }
 
 async function loginUser(req: Request, res: Response) {
-  const { email, password, isAdmin } = req.body as Prisma.UserCreateInput
+  const { email, password } = req.body as Prisma.UserCreateInput
 
   try {
     const user = await prisma.user.findUnique({
@@ -53,7 +53,8 @@ async function loginUser(req: Request, res: Response) {
         .status(HttpStatusCode.NOT_FOUND)
         .json({ message: ErrorAuth.NOT_FOUND })
     }
-
+    
+    const isAdmin = user.isAdmin
     const unhashedPassword = await bcrypt.compare(password, user.password)
 
     if (!unhashedPassword) {
