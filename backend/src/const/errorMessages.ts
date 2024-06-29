@@ -9,5 +9,7 @@ export enum ErrorAuth {
 }
 
 export enum ErrorMsg {
-		SOMETHING_WENT_WRONG = "Something went wrong"
+  SOMETHING_WENT_WRONG = "Something went wrong",
+  MISSING_FIELDS = "Missing required fields",
+  NOT_FOUND = "Not found",
 }

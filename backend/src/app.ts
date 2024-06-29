@@ -1,4 +1,4 @@
-import express, { Application, Router } from "express"
+import express, { Application } from "express"
 import cookieParser from "cookie-parser"
 import logger from "morgan"
 import apiRouter from "./routes/apiRouter"

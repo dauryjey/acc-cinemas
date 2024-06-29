@@ -129,3 +129,5 @@ async function deleteTheater(req: Request, res: Response) {
       .json({ message: ErrorMsg.SOMETHING_WENT_WRONG })
   }
 }
+
+export default { getTheaters, createTheater, getTheaterById, updateTheater, deleteTheater} as const
