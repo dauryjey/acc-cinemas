@@ -10,7 +10,7 @@ theaterRouter.post("/create", validateToken, isAdmin, async (req, res) =>
 theaterRouter.get("/all", async (req, res) =>
   TheaterController.getTheaters(req, res)
 )
-theaterRouter.get("/:id", validateToken, isAdmin, async (req, res) =>
+theaterRouter.get("/:id", validateToken, async (req, res) =>
   TheaterController.getTheaterById(req, res)
 )
 theaterRouter.put("/:id", validateToken, isAdmin, async (req, res) =>
