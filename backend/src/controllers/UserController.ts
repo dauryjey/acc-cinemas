@@ -6,19 +6,10 @@ import { ErrorAuth, ErrorMsg } from "../const/errorMessages"
 import { Request, Response } from "express"
 import { generateJWT } from "../utils/jwt"
 import HttpStatusCode from "../const/httpStatusCode"
-import { userSchema } from "../zod/UserSchema"
-import { formatZodError } from "../utils/formatZodError"
 
 async function createUser(req: Request, res: Response) {
-  const user = userSchema.safeParse(req.body as Prisma.UserCreateInput)
-
-  if (!user.success) {
-    return res
-      .status(HttpStatusCode.BAD_REQUEST)
-      .json(formatZodError(user.error))
-  }
-
-  const { email, firstName, lastName, password, isAdmin } = user.data
+  const { email, firstName, lastName, password, isAdmin } =
+    req.body as Prisma.UserCreateInput
 
   try {
     await prisma.user.create({
