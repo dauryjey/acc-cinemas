@@ -6,10 +6,19 @@ import { ErrorAuth, ErrorMsg } from "../const/errorMessages"
 import { Request, Response } from "express"
 import { generateJWT } from "../utils/jwt"
 import HttpStatusCode from "../const/httpStatusCode"
+import { userSchema } from "../zod/UserSchema"
+import { formatZodError } from "../utils/formatZodError"
 
 async function createUser(req: Request, res: Response) {
-  const { email, firstName, lastName, password, isAdmin } =
-    req.body as Prisma.UserCreateInput
+  const user = userSchema.safeParse(req.body as Prisma.UserCreateInput)
+
+  if (!user.success) {
+    return res
+      .status(HttpStatusCode.BAD_REQUEST)
+      .json(formatZodError(user.error))
+  }
+
+  const { email, firstName, lastName, password, isAdmin } = user.data
 
   try {
     await prisma.user.create({
@@ -53,7 +62,7 @@ async function loginUser(req: Request, res: Response) {
         .status(HttpStatusCode.NOT_FOUND)
         .json({ message: ErrorAuth.NOT_FOUND })
     }
-    
+
     const isAdmin = user.isAdmin
     const unhashedPassword = await bcrypt.compare(password, user.password)
 
