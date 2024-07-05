@@ -59,10 +59,10 @@ async function createShowtime(req: Request, res: Response) {
 		try {
 				const showtime = await prisma.showtime.create({
 						data: {
-								movieId: movieId,
-								screenId: screenId,
-								startTime: startTime,
-								endTime: endTime,
+								movieId,
+								screenId,
+								startTime,
+								endTime,
 						},
 				})
 
@@ -92,10 +92,10 @@ async function updateShowtime (req: Request, res: Response) {
 								id: id,
 						},
 						data: {
-								movieId: movieId,
-								screenId: screenId,
-								startTime: startTime,
-								endTime: endTime,
+								movieId,
+								screenId,
+								startTime,
+								endTime,
 						},
 				})
 
