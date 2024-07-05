@@ -1,32 +1,36 @@
 import { Router } from "express"
 import ShowtimeController from "../controllers/ShowtimeController"
-import { isAdmin, validateToken } from "../middlewares/jwtMiddleware"
+import { ValidateRole, ValidateToken } from "../middlewares/jwtMiddleware"
+import { RequestValidator } from "../middlewares/requestValidator"
+import ShowtimeSchema from "../schemas/ShowtimeSchema"
 
 export const showtimeRouter = Router()
 
 showtimeRouter.get("/all", ShowtimeController.getShowtimes)
 showtimeRouter.get(
   "/:id",
-  validateToken,
-  isAdmin,
+  ValidateToken,
+  ValidateRole,
   ShowtimeController.getShowtimeById
 )
 showtimeRouter.post(
   "/create",
-  validateToken,
-  isAdmin,
+  ValidateToken,
+  ValidateRole,
+  RequestValidator(ShowtimeSchema.showtime),
   ShowtimeController.createShowtime
 )
 showtimeRouter.put(
   "/:id",
-  validateToken,
-  isAdmin,
+  ValidateToken,
+  ValidateRole,
+  RequestValidator(ShowtimeSchema.showtimeUpdate),
   ShowtimeController.updateShowtime
 )
 
 showtimeRouter.delete(
-		"/:id",
-		validateToken,
-		isAdmin,
-		ShowtimeController.deleteShowtime
+  "/:id",
+  ValidateToken,
+  ValidateRole,
+  ShowtimeController.deleteShowtime
 )
