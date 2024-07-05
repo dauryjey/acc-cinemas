@@ -3,7 +3,7 @@ import { ErrorAuth } from "../const/errorMessages"
 import HttpStatusCode from "../const/httpStatusCode"
 import { getTokenFromHeader, verifyJWT } from "../utils/jwt"
 
-function validateToken(req: Request, res: Response, next: NextFunction) {
+function ValidateToken(req: Request, res: Response, next: NextFunction) {
   const token = getTokenFromHeader(req)
 
   if (!token) {
@@ -25,7 +25,7 @@ function validateToken(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-function isAdmin(req: Request, res: Response, next: NextFunction) {
+function ValidateRole(req: Request, res: Response, next: NextFunction) {
 	console.log(req.body.user)
   if (req.body.user.isAdmin) {
     next()
@@ -36,4 +36,4 @@ function isAdmin(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-export { validateToken, isAdmin }
+export { ValidateToken, ValidateRole }
