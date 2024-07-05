@@ -7,7 +7,7 @@ import { Prisma } from "@prisma/client"
 async function getScreens(_: Request, res: Response) {
   try {
     // Remember to add pagination
-    const screens = prisma.screen.findMany()
+    const screens = await prisma.screen.findMany()
 
     if (!screens) {
       return res
@@ -33,7 +33,7 @@ async function getScreenById(req: Request, res: Response) {
   }
 
   try {
-    const screen = prisma.screen.findUnique({
+    const screen = await prisma.screen.findUnique({
       where: {
         id: id,
       },
@@ -62,18 +62,17 @@ async function createScreen(req: Request, res: Response) {
   }
 
   try {
-    const screen = prisma.screen.create({
+    const screen = await prisma.screen.create({
       data: {
         name,
         maxSeat,
         theater: {
           connect: {
             id: theaterId,
-          },
-        },
+          }
+        }
       },
     })
-
     return res.status(HttpStatusCode.CREATED).json(screen)
   } catch (error) {
     return res
@@ -99,7 +98,7 @@ async function updateScreen(req: Request, res: Response) {
   }
 
   try {
-    const screen = prisma.screen.update({
+    const screen = await prisma.screen.update({
       where: {
         id: id,
       },

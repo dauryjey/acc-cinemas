@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client"
 
 async function getMovies(_: Request, res: Response) {
   try {
-    const movies = prisma.movie.findMany()
+    const movies = await prisma.movie.findMany()
 
     if (!movies) {
       return res
@@ -26,7 +26,7 @@ async function getMovieById(req: Request, res: Response) {
   const { id } = req.params
 
   try {
-    const movie = prisma.movie.findUnique({
+    const movie = await prisma.movie.findUnique({
       where: {
         id: id,
       },
@@ -57,7 +57,7 @@ async function createMovie(req: Request, res: Response) {
   }
 
   try {
-    const movie = prisma.movie.create({
+    const movie = await prisma.movie.create({
       data: {
         title,
         sinopsis,
@@ -87,7 +87,7 @@ async function updateMovie(req: Request, res: Response) {
   }
 
   try {
-    const movie = prisma.movie.update({
+    const movie = await prisma.movie.update({
       where: {
         id: id,
       },
@@ -118,7 +118,7 @@ async function deleteMovie(req: Request, res: Response) {
   }
 
   try {
-    const movie = prisma.movie.delete({
+    const movie = await prisma.movie.delete({
       where: {
         id: id,
       },
